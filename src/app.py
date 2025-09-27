@@ -1,3 +1,56 @@
+
+from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
+from typing import Dict, List
+
+app = FastAPI(title="Mergington High School API",
+              description="API for viewing and signing up for extracurricular activities")
+
+# Simple in-memory user database
+users: Dict[str, Dict] = {
+    "admin@mergington.edu": {
+        "role": "admin",
+        "name": "Admin User"
+    },
+    "teacher@mergington.edu": {
+        "role": "teacher",
+        "name": "Teacher User"
+    },
+    "student@mergington.edu": {
+        "role": "student",
+        "name": "Student User"
+    }
+}
+
+# Admin endpoints for user management
+@app.get("/users")
+def get_users():
+    return users
+
+@app.post("/users/add")
+def add_user(email: str, name: str, role: str):
+    if email in users:
+        raise HTTPException(status_code=400, detail="User already exists")
+    users[email] = {"name": name, "role": role}
+    return {"message": f"User {email} added as {role}"}
+
+@app.put("/users/{email}/edit")
+def edit_user(email: str, name: str = None, role: str = None):
+    if email not in users:
+        raise HTTPException(status_code=404, detail="User not found")
+    if name:
+        users[email]["name"] = name
+    if role:
+        users[email]["role"] = role
+    return {"message": f"User {email} updated"}
+
+@app.delete("/users/{email}/delete")
+def delete_user(email: str):
+    if email not in users:
+        raise HTTPException(status_code=404, detail="User not found")
+    del users[email]
+    return {"message": f"User {email} deleted"}
 import time
 
 def simple_clock():
