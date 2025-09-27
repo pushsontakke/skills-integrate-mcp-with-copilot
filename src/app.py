@@ -1,3 +1,16 @@
+import time
+
+def simple_clock():
+    try:
+        while True:
+            current_time = time.strftime('%H:%M:%S')
+            print(f'\r{current_time}', end='', flush=True)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print('\nClock stopped.')
+
+if __name__ == "__main__":
+    simple_clock()
 """
 High School Management System API
 
